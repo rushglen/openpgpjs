@@ -280,7 +280,7 @@ SecretKey.prototype.decrypt = async function (passphrase) {
   return true;
 };
 
-SecretKey.prototype.generate = function (bits, curve) {
+SecretKey.prototype.generate = async function (bits, curve) {
   const that = this;
   const algo = enums.write(enums.publicKey, that.algorithm);
   return crypto.generateParams(algo, bits, curve).then(function(params) {

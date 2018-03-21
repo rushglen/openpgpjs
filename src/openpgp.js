@@ -105,20 +105,17 @@ export function destroyWorker() {
  * @param  {Boolean} unlocked        (optional) If the returned secret part of the generated key is unlocked
  * @param  {Number} keyExpirationTime (optional) The number of seconds after the key creation time that the key expires
  * @param  {Date} date               (optional) override the creation date of the key and the key signatures
+ * @param  {Array<Object>} subkeys   (optional) options for each subkey, default to main key options.
+      Set "sign" to true in the subkey options to make the subkey a signing key rather than an encryption key
  * @returns {Promise<Object>}         The generated key object in the form:
  *                                     { key:Key, privateKeyArmored:String, publicKeyArmored:String }
  * @async
  * @static
  */
 
-export function generateKey({
-  userIds=[], passphrase, numBits=2048, unlocked=false, keyExpirationTime=0, curve="", date=new Date()
-} = {}) {
+export function generateKey({ userIds=[], passphrase="", numBits=2048, unlocked=false, keyExpirationTime=0, curve="", date=new Date(), subkeys=[{}] }) {
   userIds = formatUserIds(userIds);
-  const options = {
-    userIds, passphrase, numBits, unlocked, keyExpirationTime, curve, date
-  };
-
+  const options = { userIds, passphrase, numBits,keyExpirationTime, curve, date, subkeys };
   if (util.getWebCryptoAll() && numBits < 2048) {
     throw new Error('numBits should be 2048 or 4096, found: ' + numBits);
   }
@@ -148,14 +145,9 @@ export function generateKey({
  * @async
  * @static
  */
-export function reformatKey({
-  privateKey, userIds=[], passphrase="", unlocked=false, keyExpirationTime=0
-} = {}) {
+export function reformatKey({privateKey, userIds=[], passphrase="", unlocked=false, keyExpirationTime=0, date}) {
   userIds = formatUserIds(userIds);
-
-  const options = {
-    privateKey, userIds, passphrase, unlocked, keyExpirationTime
-  };
+  const options = { privateKey, userIds, passphrase, unlocked, keyExpirationTime, date};
 
   if (asyncProxy) {
     return asyncProxy.delegate('reformatKey', options);
@@ -335,9 +327,7 @@ export function decrypt({ message, privateKeys, passwords, sessionKeys, publicKe
  * @async
  * @static
  */
-export function sign({
-  data, privateKeys, armor=true, detached=false, date=new Date()
-}) {
+export function sign({ data, privateKeys, armor=true, detached=false, date=new Date() }) {
   checkData(data);
   privateKeys = toArray(privateKeys);
 
@@ -496,10 +486,10 @@ function checkCleartextOrMessage(message) {
  * Format user ids for internal use.
  */
 function formatUserIds(userIds) {
-  if (!userIds) {
+  if (!userIds){
     return userIds;
   }
-  userIds = toArray(userIds); // normalize to array
+  userIds = toArray(userIds);
   userIds = userIds.map(id => {
     if (util.isString(id) && !util.isUserId(id)) {
       throw new Error('Invalid user id format');

@@ -260,7 +260,7 @@ export default {
    * @returns {Array}              The array of parameters
    * @async
    */
-  generateParams: function(algo, bits, oid) {
+  generateParams: async function(algo, bits, oid) {
     const types = [].concat(this.getPubKeyParamTypes(algo), this.getPrivKeyParamTypes(algo));
     switch (algo) {
       case enums.publicKey.rsa_encrypt:
