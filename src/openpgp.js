@@ -486,10 +486,10 @@ function checkCleartextOrMessage(message) {
  * Format user ids for internal use.
  */
 function formatUserIds(userIds) {
-  if (!userIds){
+  if (!userIds) {
     return userIds;
   }
-  userIds = toArray(userIds);
+  userIds = toArray(userIds); //normalize to array
   userIds = userIds.map(id => {
     if (util.isString(id) && !util.isUserId(id)) {
       throw new Error('Invalid user id format');

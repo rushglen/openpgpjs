@@ -1132,7 +1132,7 @@ export async function generate(options) {
       try {
         options.curve = enums.write(enums.curve, options.curve);
       } catch (e) {
-        throw new Error('Invalid curve');
+        throw new Error('Not valid curve.');
       }
       if (options.curve === enums.curve.ed25519 || options.curve === enums.curve.curve25519) {
         if (!subkeyDefaults.algorithm || options.sign) {
@@ -1183,7 +1183,7 @@ export async function generate(options) {
  * @param {String}  options.passphrase The passphrase used to encrypt the resulting private key
  * @param {Boolean} [options.unlocked=false]    The secret part of the generated key is unlocked
  * @param {Number} [options.keyExpirationTime=0]
- *                              The number of seconds after the key creation time that the key expires
+ *                             The number of seconds after the key creation time that the key expires
  * @returns {Promise<module:key.Key>}
  * @async
  * @static
